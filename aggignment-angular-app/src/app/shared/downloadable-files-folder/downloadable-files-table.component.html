@@ -1,0 +1,60 @@
+<section class="downloads-card">
+  <header class="toolbar">
+    <label class="select-all">
+      <input
+        type="checkbox"
+        [checked]="allAvailableSelected"
+        [indeterminate]="someAvailableSelected"
+        (change)="toggleSelectAll()"
+      />
+    </label>
+
+    <span class="selected-count">{{ selectedLabel }}</span>
+
+    <button
+      type="button"
+      class="download-btn"
+      [disabled]="selectedCount === 0"
+      (click)="downloadSelected()"
+    >
+      Download Selected
+    </button>
+  </header>
+
+  <div class="files-list" role="table" aria-label="Downloadable files">
+    <div class="list-row list-header" role="row">
+      <div class="list-cell checkbox-col" role="columnheader"></div>
+      <div class="list-cell" role="columnheader">Name</div>
+      <div class="list-cell" role="columnheader">Device</div>
+      <div class="list-cell" role="columnheader">Path</div>
+      <div class="list-cell" role="columnheader">Status</div>
+    </div>
+
+    @for (file of files; track file.path) {
+      <div
+        class="list-row"
+        role="row"
+        [class.row-selected]="isSelected(file.path)"
+        [class.row-unavailable]="file.status !== 'available'"
+      >
+        <div class="list-cell checkbox-col" role="cell">
+          <input
+            type="checkbox"
+            [checked]="isSelected(file.path)"
+            [disabled]="file.status !== 'available'"
+            (change)="onRowSelectionChange(file.path, $any($event.target).checked)"
+          />
+        </div>
+        <div class="list-cell" role="cell">{{ file.name }}</div>
+        <div class="list-cell" role="cell">{{ file.device }}</div>
+        <div class="list-cell path" role="cell">{{ file.path }}</div>
+        <div class="list-cell" role="cell">
+          <span class="status-chip" [class.available]="file.status === 'available'">
+            <span class="dot" aria-hidden="true"></span>
+            {{ formatStatus(file.status) }}
+          </span>
+        </div>
+      </div>
+    }
+  </div>
+</section>

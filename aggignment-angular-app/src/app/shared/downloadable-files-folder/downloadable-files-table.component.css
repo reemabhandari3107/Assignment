@@ -1,0 +1,107 @@
+:host {
+  display: block;
+}
+
+.downloads-card {
+  border: 1px solid #d8dde6;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e2e7ef;
+  background: #f8fafc;
+}
+
+.selected-count {
+  font-size: 1.05rem;
+  color: #2f3a48;
+  min-width: 7.5rem;
+}
+
+.download-btn {
+  border: none;
+  background: transparent;
+  color: #2f3a48;
+  font-size: 1.05rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.download-btn:disabled {
+  color: #9aa4b2;
+  cursor: not-allowed;
+}
+
+.files-list {
+  width: 100%;
+}
+
+.list-row {
+  display: grid;
+  grid-template-columns: 2.5rem 1.2fr 1fr 3fr 1fr;
+  align-items: center;
+  border-bottom: 1px solid #e2e7ef;
+  color: #2f3a48;
+  font-size: 0.95rem;
+  transition: background-color 0.15s ease;
+}
+
+.list-cell {
+  padding: 0.75rem;
+}
+
+.list-header {
+  background: #f4f6f9;
+  font-weight: 600;
+}
+
+.checkbox-col {
+  width: 2.5rem;
+}
+
+.path {
+  word-break: break-all;
+}
+
+.list-row:not(.list-header):hover {
+  background: #eef3f8;
+}
+
+.list-row.row-selected {
+  background: #dce8f5;
+}
+
+.list-row.row-unavailable {
+  color: #7c8796;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #5b6675;
+  font-weight: 600;
+}
+
+.status-chip .dot {
+  display: none;
+}
+
+.status-chip.available {
+  color: #2f3a48;
+}
+
+.status-chip.available .dot {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 999px;
+  background: #77cd4d;
+}
