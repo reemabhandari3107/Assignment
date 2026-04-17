@@ -18,12 +18,32 @@ export interface DownloadableFile {
   styleUrl: './downloadable-files-table.component.css',
 })
 export class DownloadableFilesTableComponent {
-  @Input({ required: true }) files: DownloadableFile[] = [];
+  private allFiles: DownloadableFile[] = [];
+  private availableFiles: DownloadableFile[] = [];
+  private availablePaths = new Set<string>();
+
+  @Input({ required: true })
+  set files(value: DownloadableFile[]) {
+    this.allFiles = value ?? [];
+    this.availableFiles = this.allFiles.filter((file) => file.status === 'available');
+    this.availablePaths = new Set(this.availableFiles.map((file) => file.path));
+    this.sanitizeSelection();
+  }
+
+  get files(): DownloadableFile[] {
+    return this.allFiles;
+  }
 
   private readonly selectedPaths = new Set<string>();
 
   protected get selectedCount(): number {
-    return this.getSelectedAvailableFiles().length;
+    let count = 0;
+    for (const path of this.selectedPaths) {
+      if (this.availablePaths.has(path)) {
+        count++;
+      }
+    }
+    return count;
   }
 
   protected get selectedLabel(): string {
@@ -31,11 +51,10 @@ export class DownloadableFilesTableComponent {
   }
 
   protected get allAvailableSelected(): boolean {
-    const available = this.getAvailableFiles();
-    if (!available.length) {
+    if (this.availablePaths.size === 0) {
       return false;
     }
-    return available.every((file) => this.selectedPaths.has(file.path));
+    return this.selectedCount === this.availablePaths.size;
   }
 
   protected get someAvailableSelected(): boolean {
@@ -47,8 +66,7 @@ export class DownloadableFilesTableComponent {
   }
 
   protected onRowSelectionChange(path: string, checked: boolean): void {
-    const file = this.files.find((item) => item.path === path);
-    if (!file || file.status !== 'available') {
+    if (!this.availablePaths.has(path)) {
       this.selectedPaths.delete(path);
       return;
     }
@@ -67,8 +85,8 @@ export class DownloadableFilesTableComponent {
     }
 
     this.selectedPaths.clear();
-    for (const file of this.getAvailableFiles()) {
-      this.selectedPaths.add(file.path);
+    for (const path of this.availablePaths) {
+      this.selectedPaths.add(path);
     }
   }
 
@@ -89,18 +107,13 @@ export class DownloadableFilesTableComponent {
     return status.charAt(0).toUpperCase() + status.slice(1);
   }
 
-  private getAvailableFiles(): DownloadableFile[] {
-    return this.files.filter((file) => file.status === 'available');
-  }
-
   private getSelectedAvailableFiles(): DownloadableFile[] {
-    return this.files.filter((file) => file.status === 'available' && this.selectedPaths.has(file.path));
+    return this.availableFiles.filter((file) => this.selectedPaths.has(file.path));
   }
 
   private sanitizeSelection(): void {
-    const availablePaths = new Set(this.getAvailableFiles().map((file) => file.path));
     for (const path of this.selectedPaths) {
-      if (!availablePaths.has(path)) {
+      if (!this.availablePaths.has(path)) {
         this.selectedPaths.delete(path);
       }
     }
