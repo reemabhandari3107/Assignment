@@ -23,7 +23,7 @@ export class DownloadableFilesTableComponent {
   private readonly selectedPaths = new Set<string>();
 
   protected get selectedCount(): number {
-    return this.selectedPaths.size;
+    return this.getSelectedAvailableFiles().length;
   }
 
   protected get selectedLabel(): string {
@@ -31,7 +31,7 @@ export class DownloadableFilesTableComponent {
   }
 
   protected get allAvailableSelected(): boolean {
-    const available = this.files.filter((file) => file.status === 'available');
+    const available = this.getAvailableFiles();
     if (!available.length) {
       return false;
     }
@@ -47,6 +47,12 @@ export class DownloadableFilesTableComponent {
   }
 
   protected onRowSelectionChange(path: string, checked: boolean): void {
+    const file = this.files.find((item) => item.path === path);
+    if (!file || file.status !== 'available') {
+      this.selectedPaths.delete(path);
+      return;
+    }
+
     if (checked) {
       this.selectedPaths.add(path);
     } else {
@@ -55,23 +61,20 @@ export class DownloadableFilesTableComponent {
   }
 
   protected toggleSelectAll(): void {
-    this.selectedPaths.clear();
-
     if (this.allAvailableSelected) {
+      this.selectedPaths.clear();
       return;
     }
 
-    for (const file of this.files) {
-      if (file.status === 'available') {
-        this.selectedPaths.add(file.path);
-      }
+    this.selectedPaths.clear();
+    for (const file of this.getAvailableFiles()) {
+      this.selectedPaths.add(file.path);
     }
   }
 
   protected downloadSelected(): void {
-    const selected = this.files.filter(
-      (file) => file.status === 'available' && this.selectedPaths.has(file.path),
-    );
+    this.sanitizeSelection();
+    const selected = this.getSelectedAvailableFiles();
 
     if (selected.length === 0) {
       return;
@@ -84,5 +87,22 @@ export class DownloadableFilesTableComponent {
 
   protected formatStatus(status: FileStatus): string {
     return status.charAt(0).toUpperCase() + status.slice(1);
+  }
+
+  private getAvailableFiles(): DownloadableFile[] {
+    return this.files.filter((file) => file.status === 'available');
+  }
+
+  private getSelectedAvailableFiles(): DownloadableFile[] {
+    return this.files.filter((file) => file.status === 'available' && this.selectedPaths.has(file.path));
+  }
+
+  private sanitizeSelection(): void {
+    const availablePaths = new Set(this.getAvailableFiles().map((file) => file.path));
+    for (const path of this.selectedPaths) {
+      if (!availablePaths.has(path)) {
+        this.selectedPaths.delete(path);
+      }
+    }
   }
 }

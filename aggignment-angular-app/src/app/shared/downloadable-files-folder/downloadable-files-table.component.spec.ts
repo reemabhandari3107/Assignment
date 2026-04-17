@@ -84,4 +84,18 @@ describe('DownloadableFilesTableComponent', () => {
 
     alertSpy.mockRestore();
   });
+
+  it('ignores restricted selections when download is triggered', () => {
+    const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
+
+    component['selectedPaths'].add('\\Device\\HarddiskVolume2\\Windows\\System32\\smss.exe');
+    (component as any).downloadSelected();
+
+    expect(alertSpy).not.toHaveBeenCalled();
+    expect(component['selectedPaths'].has('\\Device\\HarddiskVolume2\\Windows\\System32\\smss.exe')).toBe(
+      false,
+    );
+
+    alertSpy.mockRestore();
+  });
 });
