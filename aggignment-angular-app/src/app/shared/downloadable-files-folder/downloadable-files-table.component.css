@@ -24,17 +24,13 @@
   background: #f8fafc;
 }
 
-.selected-count {
-  font-size: 1.05rem;
-  color: var(--text-main);
-  min-width: 7.5rem;
-}
+.selected-count { min-width: 7.5rem; }
+.selected-count,
+.download-btn { font-size: 1.05rem; color: var(--text-main); }
 
 .download-btn {
   border: 0;
   background: none;
-  color: var(--text-main);
-  font-size: 1.05rem;
   cursor: pointer;
   padding: 0;
 }
@@ -44,9 +40,7 @@
   cursor: not-allowed;
 }
 
-.files-list {
-  width: 100%;
-}
+.files-list { width: 100%; }
 
 .list-row {
   display: grid;
@@ -58,34 +52,22 @@
   transition: background-color 0.15s ease;
 }
 
-.list-cell {
-  padding: 0.75rem;
-}
+.list-cell { padding: 0.75rem; }
 
 .list-header {
   background: #f4f6f9;
   font-weight: 600;
 }
 
-.checkbox-col {
-  width: 2.5rem;
-}
+.checkbox-col { width: 2.5rem; }
 
-.path {
-  word-break: break-all;
-}
+.path { word-break: break-all; }
 
-.list-row:not(.list-header):hover {
-  background: var(--bg-hover);
-}
+.list-row:not(.list-header):hover { background: var(--bg-hover); }
 
-.list-row.row-selected {
-  background: var(--bg-selected);
-}
+.list-row.row-selected { background: var(--bg-selected); }
 
-.list-row.row-unavailable {
-  color: var(--text-muted);
-}
+.list-row.row-unavailable { color: var(--text-muted); }
 
 .status-chip {
   display: inline-flex;
@@ -95,13 +77,9 @@
   font-weight: 600;
 }
 
-.status-chip .dot {
-  display: none;
-}
+.status-chip .dot { display: none; }
 
-.status-chip.available {
-  color: var(--text-main);
-}
+.status-chip.available { color: var(--text-main); }
 
 .status-chip.available .dot {
   display: inline-block;

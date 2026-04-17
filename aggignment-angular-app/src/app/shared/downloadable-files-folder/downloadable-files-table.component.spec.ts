@@ -56,7 +56,7 @@ describe('DownloadableFilesTableComponent', () => {
     fixture.detectChanges();
   });
 
-  it('shows none selected by default', () => {
+  it('shows "None Selected" by default', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const selectAll = compiled.querySelector('.toolbar input[type="checkbox"]') as HTMLInputElement;
 
@@ -65,7 +65,7 @@ describe('DownloadableFilesTableComponent', () => {
     expect(selectAll.indeterminate).toBe(false);
   });
 
-  it('select-all selects only available rows', () => {
+  it('selects only available rows when select-all is clicked', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const selectAll = compiled.querySelector('.toolbar input[type="checkbox"]') as HTMLInputElement;
 
@@ -78,7 +78,7 @@ describe('DownloadableFilesTableComponent', () => {
     expect(selectAll.indeterminate).toBe(false);
   });
 
-  it('sets select-all indeterminate for partial selection', () => {
+  it('shows select-all as indeterminate on partial selection', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const rowCheckboxes = compiled.querySelectorAll('.list-row input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
     const selectAll = compiled.querySelector('.toolbar input[type="checkbox"]') as HTMLInputElement;
@@ -91,7 +91,32 @@ describe('DownloadableFilesTableComponent', () => {
     expect(component['allAvailableSelected']).toBe(false);
   });
 
-  it('alerts selected available files on download', () => {
+  it('clears all selections when select-all is clicked again', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const selectAll = compiled.querySelector('.toolbar input[type="checkbox"]') as HTMLInputElement;
+
+    selectAll.click();
+    fixture.detectChanges();
+    expect(compiled.textContent).toContain('Selected 2');
+
+    selectAll.click();
+    fixture.detectChanges();
+    expect(compiled.textContent).toContain('None Selected');
+    expect(selectAll.checked).toBe(false);
+    expect(selectAll.indeterminate).toBe(false);
+  });
+
+  it('formats status labels with capitalization', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const statusChips = Array.from(compiled.querySelectorAll('.status-chip')).map((item) =>
+      item.textContent?.trim(),
+    );
+
+    expect(statusChips).toContain('Scheduled');
+    expect(statusChips).toContain('Available');
+  });
+
+  it('alerts selected file details on download', () => {
     const alertSpy = mockAlert();
     const compiled = fixture.nativeElement as HTMLElement;
     const rowCheckboxes = compiled.querySelectorAll('.list-row input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
@@ -105,7 +130,35 @@ describe('DownloadableFilesTableComponent', () => {
     alertSpy.restore();
   });
 
-  it('ignores restricted selections when download is triggered', () => {
+  it('alerts all selected file details when download selected is clicked', () => {
+    const alertSpy = mockAlert();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const selectAll = compiled.querySelector('.toolbar input[type="checkbox"]') as HTMLInputElement;
+    const button = compiled.querySelector('button') as HTMLButtonElement;
+
+    selectAll.click();
+    fixture.detectChanges();
+    button.click();
+
+    expect(alertSpy.calls).toEqual([
+      'Targaryen \\Device\\HarddiskVolume2\\Windows\\System32\\netsh.exe\nLanniester \\Device\\HarddiskVolume1\\Windows\\System32\\uxtheme.dll',
+    ]);
+    alertSpy.restore();
+  });
+
+  it('adds the selected row class when an available row is checked', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const rows = compiled.querySelectorAll('.list-row');
+    const rowCheckboxes = compiled.querySelectorAll('.list-row input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
+    const selectedDataRow = rows[2] as HTMLElement;
+
+    rowCheckboxes[1].click();
+    fixture.detectChanges();
+
+    expect(selectedDataRow.classList.contains('row-selected')).toBe(true);
+  });
+
+  it('ignores restricted rows during download', () => {
     const alertSpy = mockAlert();
 
     component['selectedPaths'].add('\\Device\\HarddiskVolume2\\Windows\\System32\\smss.exe');
