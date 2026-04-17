@@ -4,6 +4,20 @@ import {
   DownloadableFilesTableComponent,
 } from './downloadable-files-table.component';
 
+function mockAlert() {
+  const testGlobals = globalThis as any;
+
+  if (testGlobals.jest) {
+    return testGlobals.jest.spyOn(window, 'alert').mockImplementation(() => {});
+  }
+
+  if (testGlobals.vi) {
+    return testGlobals.vi.spyOn(window, 'alert').mockImplementation(() => {});
+  }
+
+  return spyOn(window, 'alert');
+}
+
 describe('DownloadableFilesTableComponent', () => {
   let fixture: ComponentFixture<DownloadableFilesTableComponent>;
   let component: DownloadableFilesTableComponent;
@@ -69,7 +83,7 @@ describe('DownloadableFilesTableComponent', () => {
   });
 
   it('alerts selected available files on download', () => {
-    const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
+    const alertSpy = mockAlert();
     const compiled = fixture.nativeElement as HTMLElement;
     const rowCheckboxes = compiled.querySelectorAll('.list-row input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
     const button = compiled.querySelector('button') as HTMLButtonElement;
@@ -82,11 +96,13 @@ describe('DownloadableFilesTableComponent', () => {
       'Targaryen \\Device\\HarddiskVolume2\\Windows\\System32\\netsh.exe',
     );
 
-    alertSpy.mockRestore();
+    if ('mockRestore' in alertSpy) {
+      alertSpy.mockRestore();
+    }
   });
 
   it('ignores restricted selections when download is triggered', () => {
-    const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
+    const alertSpy = mockAlert();
 
     component['selectedPaths'].add('\\Device\\HarddiskVolume2\\Windows\\System32\\smss.exe');
     (component as any).downloadSelected();
@@ -96,6 +112,8 @@ describe('DownloadableFilesTableComponent', () => {
       false,
     );
 
-    alertSpy.mockRestore();
+    if ('mockRestore' in alertSpy) {
+      alertSpy.mockRestore();
+    }
   });
 });
